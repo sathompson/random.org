@@ -9,8 +9,13 @@ type generateIntegersParams struct {
     n, min, max int
 }
 
-func (params *generateIntegersParams) MarshalJSON() ([]byte, error) {
-    return []byte(fmt.Sprintf("%+v",params)), nil
+func (params *generateIntegersParams) MarshalJSON() (jsonBytes []byte, e error) {
+    jsonBytes = []byte(fmt.Sprintf("{%q:%q,%q:%v,%q:%v,%q:%v}",
+                                  "apiKey", params.apiKey,
+                                  "n", params.n,
+                                  "min", params.min,
+                                  "max", params.max))
+    return
 }
 
 func (c *client) GenerateIntegers(n, min, max int) (result []int, e error) {
@@ -22,7 +27,7 @@ func (c *client) GenerateIntegers(n, min, max int) (result []int, e error) {
         return
     }
     
-    // Some stuff goes here
+    //stuff goes here
     
     return
 }
