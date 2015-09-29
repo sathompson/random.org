@@ -6,7 +6,7 @@ import (
 )
 
 type request struct {
-    method Method
+    method string
     params *json.Marshaler
     id int
 }

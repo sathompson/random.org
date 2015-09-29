@@ -5,3 +5,15 @@ const (
     ContentType = "application/json-rpc"
     JSONRPC = "2.0"
 )
+
+// Methods
+
+const (
+    generateIntegersMethod = "generateIntegers"
+    generateDecimalFractionsMethod = "generateDecimalFractions"
+    generateGaussiansMethod = "generateGaussians"
+    generateStringsMethod = "generateStrings"
+    generateUUIDsMethod = "generateUUIDs"
+    generateBlobsMethod = "generateBlobs"
+    getUsageMethod = "getUsage"
+)
