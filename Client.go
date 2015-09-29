@@ -2,6 +2,9 @@ package randomorg
 
 import (
     "net/http"
+    "encoding/json"
+    "bytes"
+    "errors"
 )
 
 var httpclient *http.Client = new(http.Client)
@@ -14,6 +17,8 @@ type Client interface {
     NextId() int
     SetNextId(id int)
     IncrementId() int
+    // Requests to random.org
+    GenerateIntegers(n, min, max int) ([]int, error)
 }
 
 type client struct {
@@ -26,6 +31,35 @@ type client struct {
 func NewClient(apiKey string) Client {
     return &client{apiKey,URL,httpclient,0}
 }
+
+func (c *client) makeHTTPRequest(r *request) (httpRequest *http.Request, e error) {
+    jsonRequest, e := json.Marshal(r)
+    if (e != nil) {
+        return
+    }
+    
+    body := bytes.NewReader(jsonRequest)
+    httpRequest, e = http.NewRequest("POST", c.url, body)
+    if (e != nil) {
+        return
+    }
+    
+    httpRequest.Header.Add("Content-Type", ContentType)
+    
+    return
+}
+
+func (c *client) sendRequest(r *request) (httpResponse *http.Response, e error) {
+    httpRequest, e := c.makeHTTPRequest(r)
+    
+    httpResponse, e = c.httpClient.Do(httpRequest)
+    if (httpResponse.StatusCode != 200) {
+        e = errors.New(httpResponse.Status)
+    }
+    return
+}
+
+// Fulfilling Client interface
 
 func (c *client) URL() string {
     return c.url
