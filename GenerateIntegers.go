@@ -2,7 +2,31 @@ package randomorg
 
 import (
     "fmt"
+    "errors"
 )
+
+// Actual function
+
+func (c *client) GenerateIntegers(n, min, max int) (result []int, e error) {
+    params := &generateIntegersParams{c.apiKey, n, min, max}
+    r := &request{generateIntegersMethod, params, c.IncrementId()}
+    
+    response := new(generateIntegersResponse)
+    
+    e = c.sendRequest(r, response)
+    if (e != nil) {
+        return
+    }
+    if (response.Error.Message != "") {
+        e = errors.New(response.Error.Message)
+        return
+    }
+    
+    result = response.Result.Random.Data
+    return
+}
+
+// Params
 
 type generateIntegersParams struct {
     apiKey string
@@ -18,16 +42,21 @@ func (params *generateIntegersParams) MarshalJSON() (jsonBytes []byte, e error) 
     return
 }
 
-func (c *client) GenerateIntegers(n, min, max int) (result []int, e error) {
-    params := &generateIntegersParams{c.apiKey, n, min, max}
-    r := &request{generateIntegersMethod, params, c.IncrementId()}
-    
-    httpResponse, e := c.sendRequest(r)
-    if (e != nil) {
-        return
+// Results
+
+type generateIntegersResponse struct {
+    Jsonrpc string
+    Result struct {
+        Random struct {
+            Data []int
+            CompletionTime string
+        }
+        BitsUsed, BitsLeft, RequestsLeft, AdvisoryDelay int
     }
-    
-    //stuff goes here
-    
-    return
+    Error struct {
+        Code int
+        Message string
+        Data interface{}
+    }
+    Id int
 }

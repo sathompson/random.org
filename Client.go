@@ -5,9 +5,12 @@ import (
     "encoding/json"
     "bytes"
     "errors"
+    "io/ioutil"
 )
 
 var httpclient *http.Client = new(http.Client)
+
+// Client interface
 
 type Client interface {
     URL() string
@@ -21,6 +24,8 @@ type Client interface {
     GenerateIntegers(n, min, max int) ([]int, error)
 }
 
+// Client implementation
+
 type client struct {
     apiKey string
     url string
@@ -31,6 +36,8 @@ type client struct {
 func NewClient(apiKey string) Client {
     return &client{apiKey,URL,httpclient,0}
 }
+
+// Utility functions
 
 func (c *client) makeHTTPRequest(r *request) (httpRequest *http.Request, e error) {
     jsonRequest, e := json.Marshal(r)
@@ -49,13 +56,20 @@ func (c *client) makeHTTPRequest(r *request) (httpRequest *http.Request, e error
     return
 }
 
-func (c *client) sendRequest(r *request) (httpResponse *http.Response, e error) {
+func (c *client) sendRequest(r *request, response interface{}) (e error) {
     httpRequest, e := c.makeHTTPRequest(r)
     
-    httpResponse, e = c.httpClient.Do(httpRequest)
+    httpResponse, e := c.httpClient.Do(httpRequest)
     if (httpResponse.StatusCode != 200) {
         e = errors.New(httpResponse.Status)
     }
+    
+    body, e := ioutil.ReadAll(httpResponse.Body)
+    if (e != nil) {
+        return
+    }
+    
+    json.Unmarshal(body, response)
     return
 }
 
