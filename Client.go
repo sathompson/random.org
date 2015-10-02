@@ -8,6 +8,11 @@ import (
     "io/ioutil"
 )
 
+const (
+  URL = "https://api.random.org/json-rpc/1/invoke"
+  ContentType = "application/json-rpc"
+)
+
 var httpclient *http.Client = new(http.Client)
 
 // Client interface

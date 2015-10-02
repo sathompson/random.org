@@ -5,6 +5,8 @@ import (
     "fmt"
 )
 
+const JSONRPC = "2.0"
+
 type request struct {
     method string
     params json.Marshaler

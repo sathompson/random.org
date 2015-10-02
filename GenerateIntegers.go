@@ -5,15 +5,17 @@ import (
     "errors"
 )
 
+const generateIntegersMethod = "generateIntegers"
+
 // Actual function
 
 func (c *client) GenerateIntegers(n, min, max int) (result []int, e error) {
     params := &generateIntegersParams{c.apiKey, n, min, max}
-    r := &request{generateIntegersMethod, params, c.IncrementId()}
+    req := &request{generateIntegersMethod, params, c.IncrementId()}
     
     response := new(generateIntegersResponse)
     
-    e = c.sendRequest(r, response)
+    e = c.sendRequest(req, response)
     if (e != nil) {
         return
     }
