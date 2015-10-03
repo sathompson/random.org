@@ -18,28 +18,33 @@ var httpclient *http.Client = new(http.Client)
 // Client interface
 
 type Client interface {
-    URL() string
-    SetURL(url string)
-    HTTPClient() *http.Client
-    SetHTTPClient(httpClient *http.Client)
-    NextId() int
-    SetNextId(id int)
-    IncrementId() int
-    // Requests to random.org
-    GenerateIntegers(n, min, max int) ([]int, error)
+  URL() string
+  SetURL(url string)
+  HTTPClient() *http.Client
+  SetHTTPClient(httpClient *http.Client)
+  NextId() int
+  SetNextId(id int)
+  IncrementId() int
+  BitsUsed() int      //By last request
+  BitsLeft() int
+  RequestsLeft() int
+  AdvisoryDelay() int //From last request
+  // Requests to random.org
+  GenerateIntegers(n, min, max int) ([]int, error)
 }
 
 // Client implementation
 
 type client struct {
-    apiKey string
-    url string
-    httpClient *http.Client
-    id int
+  apiKey string
+  url string
+  httpClient *http.Client
+  id int
+  bitsUsed, bitsLeft, requestsLeft, advisoryDelay int
 }
 
 func NewClient(apiKey string) Client {
-    return &client{apiKey,URL,httpclient,0}
+    return &client{apiKey,URL,httpclient,0,-1,-1,-1,-1}
 }
 
 // Utility functions
@@ -78,6 +83,13 @@ func (c *client) sendRequest(r *request, response interface{}) (e error) {
     return
 }
 
+func (c *client) updateMetaData(bitsUsed, bitsLeft, requestsLeft, advisoryDelay int) {
+  c.bitsUsed = bitsUsed
+  c.bitsLeft = bitsLeft
+  c.requestsLeft = requestsLeft
+  c.advisoryDelay = advisoryDelay
+}
+
 // Fulfilling Client interface
 
 func (c *client) URL() string {
@@ -108,4 +120,20 @@ func (c *client) IncrementId() (id int) {
     id = c.id
     c.id += 1
     return c.id
+}
+
+func (c *client) BitsUsed() int {
+  return c.bitsUsed
+}
+
+func (c *client) BitsLeft() int {
+  return c.bitsLeft
+}
+
+func (c *client) RequestsLeft() int {
+  return c.requestsLeft
+}
+
+func (c *client) AdvisoryDelay() int {
+  return c.advisoryDelay
 }

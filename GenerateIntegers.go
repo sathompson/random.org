@@ -16,6 +16,12 @@ func (c *client) GenerateIntegers(n, min, max int) (result []int, e error) {
     response := new(generateIntegersResponse)
     
     e = c.sendRequest(req, response)
+  if (response.Result.BitsUsed != 0) {
+    c.updateMetaData(response.Result.BitsUsed,
+                     response.Result.BitsLeft,
+                     response.Result.RequestsLeft,
+                     response.Result.AdvisoryDelay)
+  }
     if (e != nil) {
         return
     }
