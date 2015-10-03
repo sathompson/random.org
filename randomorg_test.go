@@ -23,3 +23,12 @@ func TestMakeHTTPRequest(t *testing.T) {
     s := buf.String()
     fmt.Println(s)
 }
+
+func TestGenerateIntegers(t *testing.T) {
+  nums, e := testClient.GenerateIntegers(4, 1, 10)
+  if (e != nil) {
+    t.Error(e)
+  }
+  
+  fmt.Println(nums)
+}
